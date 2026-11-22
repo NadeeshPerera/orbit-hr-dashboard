@@ -29,6 +29,8 @@ export async function api<T>(path: string, { params, ...init }: RequestInit & { 
     if (v !== undefined && v !== null && v !== "") search.set(k, String(v));
   }
   const url = `${base}${path}${search.size ? `?${search}` : ""}`;
+  // In the browser, wait for the mock API (if any) to be ready. No-op with a real backend.
+  if (typeof window !== "undefined") await window.__orbitMocksReady;
   const token = useAuthStore.getState().token;
 
   const res = await fetch(url, {

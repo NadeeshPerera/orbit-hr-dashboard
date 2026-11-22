@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { useAuthStore } from "@/features/auth/auth-store";
+import { useAuthHydrated, useAuthStore } from "@/features/auth/auth-store";
 import { BrandMark } from "./brand";
 import { CommandMenu } from "./command-menu";
 import { MobileDrawer, MobileTabBar } from "./mobile-nav";
@@ -12,7 +12,7 @@ import { Topbar } from "./topbar";
 /** Signed-in layout: sidebar (desktop), tab bar + drawer (mobile), top bar, command palette. */
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const hydrated = useAuthStore((s) => s.hydrated);
+  const hydrated = useAuthHydrated();
   const token = useAuthStore((s) => s.token);
 
   useEffect(() => {

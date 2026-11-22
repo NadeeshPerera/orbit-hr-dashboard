@@ -13,7 +13,7 @@ function Sparkline({ values }: { values: number[] }) {
   const span = max - min || 1;
   const points = values.map((v, i) => `${(i / (values.length - 1)) * 100},${28 - ((v - min) / span) * 24}`).join(" ");
   return (
-    <svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden className="h-8 w-24 overflow-visible">
+    <svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden className="hidden h-8 w-24 overflow-visible sm:block">
       <motion.polyline
         points={points}
         fill="none"
@@ -48,19 +48,19 @@ function Kpi({
   chart?: React.ReactNode;
 }) {
   return (
-    <Card className="group relative overflow-hidden p-5 transition-shadow hover:shadow-md">
+    <Card className="group relative h-full overflow-hidden p-4 transition-shadow hover:shadow-md sm:p-5">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight">
+          <p className="text-xs text-muted-foreground sm:text-sm">{label}</p>
+          <p className="mt-1.5 text-2xl font-semibold tracking-tight sm:mt-2 sm:text-3xl">
             <AnimatedNumber value={value} format={format} />
           </p>
         </div>
-        <span className={cn("grid size-10 place-items-center rounded-xl transition-transform group-hover:scale-110", tone)}>
+        <span className={cn("hidden size-10 place-items-center rounded-xl transition-transform group-hover:scale-110 sm:grid", tone)}>
           <Icon className="size-5" />
         </span>
       </div>
-      <div className="mt-3 flex items-end justify-between gap-2 text-xs text-muted-foreground">
+      <div className="mt-2 flex items-end justify-between gap-2 text-[11px] leading-snug text-muted-foreground sm:mt-3 sm:text-xs">
         <span>{footer}</span>
         {chart}
       </div>
@@ -118,7 +118,7 @@ export function KpiCards({ data }: { data: DashboardData }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       {items.map((item, i) => (
         <motion.div key={item.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
           <Kpi {...item} />

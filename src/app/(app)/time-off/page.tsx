@@ -3,6 +3,8 @@ import { Skeleton } from "@/components/ui/primitives";
 import { TimeOffView } from "@/features/time-off/time-off-view";
 
 export const metadata = { title: "Time off" };
+// Signed-in pages depend on the client-side session; see (app)/layout.tsx.
+export const instant = false;
 
 export default function TimeOffPage() {
   return (

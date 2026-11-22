@@ -11,7 +11,7 @@ function Ring({ used, pending, entitled }: { used: number; pending: number; enti
   const usedPct = Math.min(1, used / entitled);
   const pendingPct = Math.min(1 - usedPct, pending / entitled);
   return (
-    <svg viewBox="0 0 64 64" className="size-16 -rotate-90" aria-hidden>
+    <svg viewBox="0 0 64 64" className="size-12 shrink-0 -rotate-90 sm:size-16" aria-hidden>
       <circle cx="32" cy="32" r={r} fill="none" stroke="var(--muted)" strokeWidth="7" />
       <motion.circle
         cx="32" cy="32" r={r} fill="none" stroke="var(--warning)" strokeWidth="7" strokeLinecap="round"
@@ -46,14 +46,17 @@ export function BalanceCards() {
         const left = b.entitled === null ? null : b.entitled - b.used - b.pending;
         return (
           <motion.div key={b.type} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Card className="flex h-full items-center gap-4 p-4">
+            <Card className="flex h-full items-center gap-3 p-3.5 sm:gap-4 sm:p-4">
               {b.entitled !== null ? (
                 <Ring used={b.used} pending={b.pending} entitled={b.entitled} />
               ) : (
-                <div className="grid size-16 shrink-0 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground">∞</div>
+                <div className="grid size-12 shrink-0 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground sm:size-16">∞</div>
               )}
               <div className="min-w-0">
-                <p className="truncate text-xs text-muted-foreground sm:text-sm">{LEAVE_TYPE_LABEL[b.type]}</p>
+                <p className="truncate text-xs text-muted-foreground sm:text-sm">
+                  <span className="capitalize sm:hidden">{b.type}</span>
+                  <span className="hidden sm:inline">{LEAVE_TYPE_LABEL[b.type]}</span>
+                </p>
                 <p className="text-2xl font-semibold tabular-nums">
                   {left ?? b.used}
                   <span className="ml-1 text-xs font-normal text-muted-foreground">{left === null ? "taken" : "left"}</span>

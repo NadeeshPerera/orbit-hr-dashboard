@@ -115,7 +115,7 @@ export function EmployeesTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className={cn("w-full min-w-[860px] text-left text-sm transition-opacity", busy && "opacity-60")}>
+      <table className={cn("w-full min-w-[760px] text-left text-sm transition-opacity", busy && "opacity-60")}>
         <thead>
           {table.getHeaderGroups().map((group) => (
             <tr key={group.id} className="border-b text-xs text-muted-foreground">

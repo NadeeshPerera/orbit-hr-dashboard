@@ -10,7 +10,7 @@ import { Avatar, Card, Input, NativeSelect, Skeleton } from "@/components/ui/pri
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useEmployeeFacets, useEmployees } from "@/lib/api/queries";
 import { EMPLOYEE_STATUSES, type Employee } from "@/lib/api/types";
-import { fullName, plural, STATUS_LABEL } from "@/lib/utils";
+import { fullName, STATUS_LABEL } from "@/lib/utils";
 import { downloadCsv, employeesToCsv } from "./csv";
 import { EmployeeDrawer } from "./employee-drawer";
 import { EmployeesTable } from "./employees-table";
@@ -65,7 +65,7 @@ export function EmployeesView() {
 
   const filters = (
     <>
-      <NativeSelect aria-label="Department" value={query.department ?? ""} onChange={(e) => update({ department: e.target.value })} className="sm:w-48">
+      <NativeSelect aria-label="Department" value={query.department ?? ""} onChange={(e) => update({ department: e.target.value })} className="xl:w-48">
         <option value="">All departments</option>
         {facets.data?.departments.map((d) => (
           <option key={d.value} value={d.value}>
@@ -73,7 +73,7 @@ export function EmployeesView() {
           </option>
         ))}
       </NativeSelect>
-      <NativeSelect aria-label="Location" value={query.location ?? ""} onChange={(e) => update({ location: e.target.value })} className="sm:w-40">
+      <NativeSelect aria-label="Location" value={query.location ?? ""} onChange={(e) => update({ location: e.target.value })} className="xl:w-40">
         <option value="">All locations</option>
         {facets.data?.locations.map((l) => (
           <option key={l.value} value={l.value}>
@@ -81,7 +81,7 @@ export function EmployeesView() {
           </option>
         ))}
       </NativeSelect>
-      <NativeSelect aria-label="Status" value={query.status ?? ""} onChange={(e) => update({ status: e.target.value })} className="sm:w-40">
+      <NativeSelect aria-label="Status" value={query.status ?? ""} onChange={(e) => update({ status: e.target.value })} className="xl:w-40">
         <option value="">Current employees</option>
         {EMPLOYEE_STATUSES.map((s) => (
           <option key={s} value={s}>
@@ -96,7 +96,7 @@ export function EmployeesView() {
     <>
       <PageHeader
         title="Employees"
-        description={data ? `${plural(data.total, "person")} ${activeFilters || query.q ? "match your filters" : "in your organisation"}` : "Your people directory"}
+        description={data ? `${data.total} ${data.total === 1 ? "person" : "people"} ${activeFilters || query.q ? "match your filters" : "in your organisation"}` : "Your people directory"}
         actions={
           <Button variant="outline" disabled={!data?.items.length} onClick={() => downloadCsv("employees.csv", employeesToCsv(selectedRows.length ? selectedRows : (data?.items ?? [])))}>
             <Download /> Export {selectedRows.length ? `${selectedRows.length} selected` : "page"}
@@ -106,7 +106,8 @@ export function EmployeesView() {
 
       <Card className="overflow-hidden">
         <div className="space-y-3 border-b p-3 sm:p-4">
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 xl:flex-row">
+          <div className="flex flex-1 gap-2">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, role or ID" aria-label="Search employees" className="pl-9" />
@@ -115,7 +116,8 @@ export function EmployeesView() {
               <SlidersHorizontal />
               {activeFilters > 0 && <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{activeFilters}</span>}
             </Button>
-            <div className="hidden gap-2 sm:flex">{filters}</div>
+          </div>
+            <div className="hidden gap-2 sm:grid sm:grid-cols-3 xl:flex">{filters}</div>
           </div>
           <AnimatePresence initial={false}>
             {showFilters && (
@@ -152,7 +154,7 @@ export function EmployeesView() {
           </div>
         ) : (
           <>
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <EmployeesTable
                 rows={data.items}
                 sort={query.sort ?? "name"}
@@ -164,7 +166,7 @@ export function EmployeesView() {
                 busy={isFetching}
               />
             </div>
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <MobileList rows={data.items} onOpen={(id) => update({ employee: id }, { resetPage: false })} />
             </div>
           </>

@@ -28,6 +28,7 @@ export function CommandMenu() {
   const [search, setSearch] = useState("");
   const q = useDebouncedValue(search.trim(), 200);
   const people = useEmployees({ q, pageSize: 6 });
+  const pages = ALL_NAV_ITEMS.filter((i) => !q || i.label.toLowerCase().includes(q.toLowerCase()));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -74,14 +75,16 @@ export function CommandMenu() {
                 </Command.Group>
               )}
 
+              {pages.length > 0 && (
               <Command.Group heading="Pages" className={groupClass}>
-                {ALL_NAV_ITEMS.filter((i) => !q || i.label.toLowerCase().includes(q.toLowerCase())).map(({ href, label, icon: Icon, soon }) => (
+                {pages.map(({ href, label, icon: Icon, soon }) => (
                   <Command.Item key={href} value={`page-${href}`} className={itemClass} onSelect={() => run(() => router.push(href))}>
                     <Icon /> <span className="flex-1">{label}</span>
                     {soon && <span className="text-[10px] font-semibold text-muted-foreground uppercase">Soon</span>}
                   </Command.Item>
                 ))}
               </Command.Group>
+              )}
 
               {!q && (
                 <Command.Group heading="Actions" className={groupClass}>

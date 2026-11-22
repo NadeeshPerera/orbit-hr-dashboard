@@ -1,6 +1,6 @@
 import { addDays, subDays, subMonths } from "date-fns";
 import { DEPARTMENTS, type Department, type Employee, type EmploymentType, type LeaveType } from "@/lib/api/types";
-import { countWorkingDays, toISODate } from "@/lib/dates";
+import { countWorkingDays, rangesOverlap, toISODate } from "@/lib/dates";
 
 // All people and data are fictional. "Orbit" is a made-up company.
 
@@ -83,7 +83,8 @@ export interface Seed {
 export function buildSeed(today: Date, seed = 7): Seed {
   const rng = createRng(seed);
   const employees: Employee[] = [];
-  const usedNames = new Set<string>();
+  // Reserved for the demo user, so no generated person can share her name or email.
+  const usedNames = new Set<string>(["Ava Chen"]);
   let n = 1000;
 
   const person = (department: Department, jobTitle: string, managerId: string | null, overrides: Partial<Employee> = {}): Employee => {
@@ -157,6 +158,9 @@ export function buildSeed(today: Date, seed = 7): Seed {
     const startDate = toISODate(start);
     const endDate = toISODate(addDays(start, length - 1));
     const createdAt = subDays(start, int(rng, 3, 30));
+    // Same rule as the API: no overlapping pending/approved time off for one person.
+    const live = (s: SeedLeave["status"]) => s === "pending" || s === "approved";
+    if (live(status) && leave.some((l) => l.employeeId === employeeId && live(l.status) && rangesOverlap(l.startDate, l.endDate, startDate, endDate))) return;
     leave.push({
       id: `LR-${++leaveId}`,
       employeeId,
@@ -172,21 +176,26 @@ export function buildSeed(today: Date, seed = 7): Seed {
   };
 
   const current = employees.filter((e) => e.status !== "offboarded");
-  // History for everyone.
+  // History for everyone. Lengths are capped so totals stay within the yearly
+  // entitlements (max 3 × 5 = 15 of 20 annual days, 3 × 2 = 6 of 10 sick days).
   for (const e of current) {
     for (let i = 0; i < int(rng, 0, 3); i++) {
-      const type: LeaveType = rng() < 0.75 ? "annual" : "sick";
-      addLeave(e.id, type, subDays(today, int(rng, 15, 300)), int(rng, 1, 7), rng() < 0.92 ? "approved" : "rejected");
+      const sick = rng() >= 0.75;
+      addLeave(e.id, sick ? "sick" : "annual", subDays(today, int(rng, 15, 300)), sick ? int(rng, 1, 2) : int(rng, 1, 5), rng() < 0.92 ? "approved" : "rejected");
     }
   }
-  // People on leave today.
+  // People on leave today: long absences are parental or unpaid leave, which aren't capped.
   for (const e of current.filter((x) => x.status === "on_leave")) {
-    addLeave(e.id, rng() < 0.5 ? "parental" : "sick", subDays(today, int(rng, 2, 10)), 40, "approved");
+    addLeave(e.id, rng() < 0.7 ? "parental" : "unpaid", subDays(today, int(rng, 2, 10)), 40, "approved");
   }
   // Pending requests waiting for Ava (her direct reports and other team members).
   const requesters = current.filter((e) => e.id !== me.id && e.managerId !== null).slice(0, 60);
-  for (let i = 0; i < 7; i++) {
-    addLeave(pick(rng, requesters).id, pick(rng, ["annual", "annual", "annual", "sick", "unpaid"] as const), addDays(today, int(rng, 3, 50)), int(rng, 1, 10), "pending");
+  // Seven different people, so pending requests can't overlap for the same person.
+  const pool = [...requesters];
+  for (let i = 0; i < 7 && pool.length; i++) {
+    const [person] = pool.splice(Math.floor(rng() * pool.length), 1);
+    const type = pick(rng, ["annual", "annual", "annual", "sick", "unpaid"] as const);
+    addLeave(person.id, type, addDays(today, int(rng, 3, 50)), type === "sick" ? int(rng, 1, 2) : int(rng, 1, 10), "pending");
   }
   // Ava's own history so her balances aren't empty.
   addLeave(me.id, "annual", subDays(today, 70), 5, "approved");

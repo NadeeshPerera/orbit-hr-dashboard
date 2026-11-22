@@ -9,11 +9,10 @@ export function renderWithProviders(ui: ReactElement, { signedIn = true } = {}) 
   if (signedIn) {
     useAuthStore.setState({
       token: "demo-token",
-      user: { id: "EMP-1007", name: "Ava Chen", email: "ava.chen@orbit-demo.com", role: "admin", title: "Head of People" },
-      hydrated: true,
+      user: { id: "EMP-1008", name: "Ava Chen", email: "ava.chen@orbit-demo.com", role: "admin", title: "Head of People" }
     });
   } else {
-    useAuthStore.setState({ token: null, user: null, hydrated: true });
+    useAuthStore.setState({ token: null, user: null });
   }
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   return {

@@ -21,6 +21,24 @@ describe("seed", () => {
     expect(buildSeed(NOW, 7)).toEqual(buildSeed(NOW, 7));
   });
 
+  it("never puts anyone over their capped leave entitlement", () => {
+    const db = makeDb();
+    for (const { id } of buildSeed(NOW).employees) {
+      for (const b of db.balances(id)) {
+        if (b.entitled !== null) expect(b.used + b.pending, `${id} ${b.type}`).toBeLessThanOrEqual(b.entitled);
+      }
+    }
+  });
+
+  it("never has overlapping pending or approved time off for the same person", () => {
+    const { leave } = buildSeed(NOW);
+    const active = leave.filter((l) => l.status === "pending" || l.status === "approved");
+    for (const a of active) {
+      const clash = active.find((b) => b !== a && b.employeeId === a.employeeId && a.startDate <= b.endDate && b.startDate <= a.endDate);
+      expect(clash, `${a.id} overlaps ${clash?.id}`).toBeUndefined();
+    }
+  });
+
   it("has unique ids and emails, and every manager exists", () => {
     const { employees } = buildSeed(NOW);
     const ids = new Set(employees.map((e) => e.id));
