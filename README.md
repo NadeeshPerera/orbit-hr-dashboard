@@ -10,9 +10,14 @@ A modern, mobile-first **HR dashboard**: a people directory, time-off approvals 
 ![TanStack](https://img.shields.io/badge/TanStack_Query_%2B_Table_v9-FF4154?logo=reactquery&logoColor=white)
 ![Motion](https://img.shields.io/badge/Motion-FFF?logo=framer&logoColor=black)
 
-**▶ Live demo:** _coming soon_ · demo sign-in: `ava.chen@orbit-demo.com` / `Demo@1234` (or click **Use the demo account**)
+### **▶ [Live demo: orbit-hr-dashboard.vercel.app](https://orbit-hr-dashboard.vercel.app)**
+Click **Use the demo account** on the sign-in page (`ava.chen@orbit-demo.com` / `Demo@1234`).
 
-<!-- screenshots: docs/screenshot-desktop.png, docs/screenshot-mobile.png -->
+<p>
+  <img src="docs/screenshot-dashboard.png" alt="Orbit HR dashboard in dark mode: KPI cards, 12-month headcount chart and department breakdown" width="74%" />
+  <img src="docs/screenshot-mobile.png" alt="Time off on a phone in light mode: balance rings, approval card with Approve and Decline buttons, bottom tab bar" width="24%" />
+</p>
+<img src="docs/screenshot-employees.png" alt="Employee directory with search, filters, sortable columns and status badges" width="74%" />
 
 > Frontend-only for now. The REST API is mocked in the browser with **Mock Service Worker**, backed by an in-memory database with real business rules, so connecting a backend later means setting one environment variable. All people and data are fictional.
 
